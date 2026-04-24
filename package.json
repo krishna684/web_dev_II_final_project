@@ -1,12 +1,13 @@
 {
-  "name": "parallel-selves",
-  "version": "0.1.0",
-  "private": true,
-  "description": "MEAN-stack persona-to-persona matching platform",
+  "name": "sidematch-backend",
+  "version": "1.0.0",
+  "description": "Backend for SideMatch AI Reports",
+  "main": "server.js",
   "scripts": {
-    "install:all": "npm install --prefix server && npm install --prefix client",
-    "server": "npm run dev --prefix server",
-    "client": "npm start --prefix client",
-    "seed": "npm run seed --prefix server"
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
   }
 }
