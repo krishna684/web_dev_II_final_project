@@ -1,0 +1,14 @@
+<ng-container *ngIf="isAuthed$ | async; else unauth">
+  <div class="atmo" style="position:fixed">
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+  <div class="grid-bg"></div>
+  <div class="app">
+    <app-navbar></app-navbar>
+    <router-outlet></router-outlet>
+  </div>
+</ng-container>
+<ng-template #unauth>
+  <router-outlet></router-outlet>
+</ng-template>
+<app-toast-host></app-toast-host>

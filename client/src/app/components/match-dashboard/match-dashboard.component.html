@@ -1,0 +1,119 @@
+<div class="page">
+  <div class="row between" style="margin-bottom:20px; align-items:flex-end">
+    <div>
+      <h1>Connections</h1>
+      <div class="sub">People whose selves match yours, ranked by how well they fit. Pick one to see the breakdown.</div>
+    </div>
+    <div class="row" style="gap:8px">
+      <button class="btn btn-primary" type="button" [disabled]="rescoring" (click)="rescoreAll()">
+        <app-icon name="refresh"></app-icon> {{ rescoring ? 'Re-scoring…' : 'Re-run scoring' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="matches-shell">
+    <div class="match-list">
+      <div *ngFor="let m of sorted$ | async"
+           class="match-item" [class.active]="selected?._id === m._id"
+           (click)="pick(m)">
+        <div class="top">
+          <b>{{ ownerPossessive(personaOf(m,'a'), currentUserId) }} {{ name(m,'a') }}
+             ↔ {{ ownerPossessive(personaOf(m,'b'), currentUserId) }} {{ name(m,'b') }}</b>
+          <div class="sc">{{ m.score }}%</div>
+        </div>
+        <div class="sub">
+          trait {{ m.traitOverlap }} · interest {{ m.interestSimilarity }} · goal {{ m.goalAlignment }}
+        </div>
+      </div>
+      <div *ngIf="(sorted$ | async)?.length === 0" class="card" style="text-align:center; padding:24px">
+        <div class="muted">No matches yet — create personas across accounts.</div>
+      </div>
+    </div>
+
+    <div class="match-detail" *ngIf="selected">
+      <div class="row between" style="margin-bottom:6px">
+        <div>
+          <div style="font-size:11px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; font-weight:600">
+            Compatibility
+          </div>
+          <div style="font-family:'Fraunces', serif; font-size:26px; font-weight:500; letter-spacing:-0.02em; margin-top:2px">
+            {{ ownerPossessive(personaOf(selected,'a'), currentUserId) }} {{ name(selected,'a') }}
+            <span style="color:var(--text-dim)">↔</span>
+            {{ ownerPossessive(personaOf(selected,'b'), currentUserId) }} {{ name(selected,'b') }}
+          </div>
+        </div>
+        <div class="row" style="gap:8px">
+          <button class="btn btn-primary btn-sm" type="button" (click)="openReport(selected)">
+            Open AI report <app-icon name="arr"></app-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="match-viz">
+        <div class="node n1"
+             [style.background]="'linear-gradient(135deg, hsl(' + hue(selected,'a') + ' 80% 65%), hsl(' + ((hue(selected,'a')+60)%360) + ' 80% 65%))'">
+          {{ init(selected,'a') }}
+        </div>
+        <div class="edge"></div>
+        <div class="match-score-hero">
+          <small>Compatibility</small>
+          <b>{{ selected.score }}%</b>
+        </div>
+        <div class="node n2"
+             [style.background]="'linear-gradient(135deg, hsl(' + hue(selected,'b') + ' 80% 65%), hsl(' + ((hue(selected,'b')+60)%360) + ' 80% 65%))'">
+          {{ init(selected,'b') }}
+        </div>
+      </div>
+
+      <div class="match-grid">
+        <div class="match-block">
+          <h5>Shared ground</h5>
+          <div class="shared">
+            <span *ngFor="let s of sharedChips(selected)" class="chip accent">{{ s }}</span>
+            <span *ngIf="!sharedChips(selected).length" class="muted" style="font-size:12.5px">No direct overlap — but goals may still align.</span>
+          </div>
+        </div>
+        <div class="match-block">
+          <h5>Score breakdown</h5>
+          <p>
+            Trait overlap: <b>{{ selected.traitOverlap }}</b><br/>
+            Interest similarity: <b>{{ selected.interestSimilarity }}</b><br/>
+            Goal alignment: <b>{{ selected.goalAlignment }}</b>
+          </p>
+        </div>
+        <div class="match-block">
+          <h5>{{ name(selected,'a') }}</h5>
+          <p>
+            <ng-container *ngIf="personaOf(selected,'a') as pa">
+              Mood {{ pa.moodTag || '—' }} · goal {{ pa.connectionGoal }}
+            </ng-container>
+          </p>
+        </div>
+        <div class="match-block">
+          <h5>{{ name(selected,'b') }}</h5>
+          <p>
+            <ng-container *ngIf="personaOf(selected,'b') as pb">
+              Mood {{ pb.moodTag || '—' }} · goal {{ pb.connectionGoal }}
+            </ng-container>
+          </p>
+        </div>
+        <div class="match-block" style="grid-column:1/-1">
+          <h5>Recommended dynamic</h5>
+          <p>
+            {{ selected.score >= 85 ? 'A strong candidate for deep collaboration or ongoing connection.' :
+               selected.score >= 70 ? 'A warm match for low-stakes collaboration — a creative sprint, travel companionship, or a recurring conversation.' :
+               'A looser fit. Works well in short bursts but may require intention to sustain.' }}
+            Click Open AI report for a natural-language narrative.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-report-panel
+  [match]="drawerMatch"
+  [a]="personaOf(drawerMatch, 'a')"
+  [b]="personaOf(drawerMatch, 'b')"
+  (close)="closeReport()">
+</app-report-panel>

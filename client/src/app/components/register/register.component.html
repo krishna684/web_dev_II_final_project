@@ -1,0 +1,120 @@
+<div class="auth-shell">
+  <div class="atmo"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+  <div class="grid-bg"></div>
+
+  <header class="auth-topbar">
+    <a class="brand" routerLink="/login" style="cursor:pointer">
+      <div class="logo-mark"></div>
+      <div>
+        <b>Lumi</b>
+        <small>where your selves meet</small>
+      </div>
+    </a>
+    <nav>
+      <a routerLink="/why">Why</a>
+      <a routerLink="/about">About us</a>
+      <a routerLink="/login" class="btn btn-ghost btn-sm">Sign in</a>
+    </nav>
+  </header>
+
+  <main class="auth-screen">
+    <div class="auth-left">
+      <app-auth-backdrop></app-auth-backdrop>
+      <div class="auth-hero">
+        <span class="tag">SETUP · 3 quick steps</span>
+        <h1>Let's spin up your <em>first self</em>.</h1>
+        <p>You can always add more personas later. Think of this as the version of you walking in the door today.</p>
+      </div>
+    </div>
+
+    <div class="auth-right">
+      <div class="auth-card" [formGroup]="form">
+        <div class="stepper">
+          <ng-container *ngFor="let i of [0,1,2]; let last = last">
+            <div class="step-dot" [class.active]="i === step" [class.done]="i < step">
+              <app-icon *ngIf="i < step" name="check"></app-icon>
+              <ng-container *ngIf="i >= step">{{ i + 1 }}</ng-container>
+            </div>
+            <div *ngIf="!last" class="step-line" [class.done]="i < step"></div>
+          </ng-container>
+        </div>
+
+        <h2>
+          <ng-container *ngIf="step===0">Who are you?</ng-container>
+          <ng-container *ngIf="step===1">Secure your account</ng-container>
+          <ng-container *ngIf="step===2">Pick a starting vibe</ng-container>
+        </h2>
+        <div class="muted">
+          <ng-container *ngIf="step===0">Just the basics — we keep it minimal.</ng-container>
+          <ng-container *ngIf="step===1">Choose a password you actually remember.</ng-container>
+          <ng-container *ngIf="step===2">We'll seed your first persona around this vibe.</ng-container>
+        </div>
+
+        <div *ngIf="step===0" style="margin-top:20px">
+          <div class="field">
+            <label>Name</label>
+            <input formControlName="name" placeholder="Krishna K."/>
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input formControlName="email" placeholder="you@domain.com"/>
+          </div>
+        </div>
+
+        <div *ngIf="step===1" style="margin-top:20px">
+          <div class="field">
+            <label>Password</label>
+            <input type="password" formControlName="password" placeholder="At least 6 characters"/>
+          </div>
+          <div class="field">
+            <label>Confirm</label>
+            <input type="password" formControlName="confirm" placeholder="Repeat it"/>
+            <span class="hint" *ngIf="form.errors?.['mismatch'] && form.get('confirm')?.touched" style="color:var(--danger)">
+              Passwords don't match.
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="step===2" style="margin-top:20px">
+          <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px">
+            <div *ngFor="let v of vibes"
+                 (click)="form.patchValue({ vibe: v.id })"
+                 [style.background]="form.get('vibe')?.value === v.id ? 'var(--accent-soft)' : 'var(--card-2)'"
+                 [style.border]="'1px solid ' + (form.get('vibe')?.value === v.id ? 'var(--accent)' : 'var(--border)')"
+                 style="padding:16px; border-radius:var(--r-md); cursor:pointer; transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:10px">
+              <app-persona-orb [initial]="v.label[0]" [hue]="v.hue" [size]="48"></app-persona-orb>
+              <div style="font-size:13px; font-weight:600">{{ v.label }}</div>
+            </div>
+          </div>
+        </div>
+
+        <p *ngIf="error" class="muted" style="color:var(--danger); font-size:12.5px; margin-top:10px">{{ error }}</p>
+
+        <div class="row" style="gap:10px; margin-top:20px">
+          <button *ngIf="step > 0" class="btn btn-ghost" type="button" (click)="prev()">
+            <app-icon name="arrL"></app-icon> Back
+          </button>
+          <button *ngIf="step === 0" class="btn btn-ghost" type="button" [routerLink]="'/login'">
+            Have an account?
+          </button>
+          <div class="spacer"></div>
+          <button *ngIf="step < 2" class="btn btn-primary" type="button" [disabled]="!stepValid()" (click)="next()">
+            Continue <app-icon name="arr"></app-icon>
+          </button>
+          <button *ngIf="step === 2" class="btn btn-primary" type="button" [disabled]="form.invalid || loading" (click)="submit()">
+            <ng-container *ngIf="loading; else goReady">Creating…</ng-container>
+            <ng-template #goReady>Start meeting people <app-icon name="arr"></app-icon></ng-template>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="auth-bottombar">
+    <div>Takes about 90 seconds</div>
+    <nav>
+      <a routerLink="/why">Why</a>
+      <a routerLink="/about">About us</a>
+    </nav>
+  </footer>
+</div>

@@ -1,0 +1,117 @@
+<div class="page">
+  <div *ngIf="showWelcome" class="card" style="margin-bottom:20px; padding:24px; position:relative; border-left:3px solid var(--accent)">
+    <button type="button" (click)="dismissWelcome()"
+            style="position:absolute; top:12px; right:12px; width:28px; height:28px; border-radius:8px; background:var(--card-2); display:grid; place-items:center; color:var(--text-dim)">
+      <app-icon name="x"></app-icon>
+    </button>
+    <div style="font-size:11px; color:var(--accent); letter-spacing:0.1em; text-transform:uppercase; font-weight:700; margin-bottom:6px">
+      New here? 30-second tour
+    </div>
+    <h3 style="font-family:'Fraunces', serif; font-weight:500; font-size:22px; margin-bottom:12px">
+      Lumi matches the <em>sides of you</em> to the sides of other people.
+    </h3>
+    <ul class="muted" style="margin:0; padding-left:18px; line-height:1.7; font-size:13.5px">
+      <li>You have multiple <b style="color:var(--text)">selves</b> — a career self, a weekend self, a creative self. Add them under <b style="color:var(--text)">My selves</b>.</li>
+      <li>Other people's selves are ranked against yours. More shared traits and interests = higher <b style="color:var(--text)">match score</b>.</li>
+      <li><b style="color:var(--text)">Connections</b> shows who matches. <b style="color:var(--text)">Network</b> is the visual map. <b style="color:var(--text)">History</b> tracks how your selves have changed.</li>
+    </ul>
+  </div>
+
+  <div class="dash-hero">
+    <h1>Welcome back, {{ (user$ | async)?.name || 'friend' }}</h1>
+    <p>This is your home view. You have
+      <b style="color:var(--text)">{{ (personas$ | async)?.length || 0 }} selves</b>
+      and
+      <b style="color:var(--text)">{{ (allMatches$ | async)?.length || 0 }} people</b>
+      whose selves match yours.
+    </p>
+    <div class="hero-actions">
+      <button class="btn btn-ghost" routerLink="/drift"><app-icon name="clock"></app-icon> See history</button>
+      <button class="btn btn-primary" (click)="newPersona()"><app-icon name="plus"></app-icon> New self</button>
+    </div>
+  </div>
+
+  <div class="stat-row" style="grid-template-columns:repeat(3, 1fr)">
+    <div class="stat">
+      <div class="label">Your selves</div>
+      <div class="value">{{ (personas$ | async)?.length || 0 }}</div>
+      <div class="delta">▲ active</div>
+      <svg class="spark" width="100" height="40" viewBox="0 0 100 40">
+        <path d="M0 30 Q 20 20 30 22 T 55 15 T 80 10 T 100 5" stroke="var(--accent)" stroke-width="1.5" fill="none" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="stat">
+      <div class="label">Best match</div>
+      <div class="value">{{ bestScore$ | async }}%</div>
+      <div class="delta">▲ strong signal</div>
+    </div>
+    <div class="stat">
+      <div class="label">People matched</div>
+      <div class="value" style="color:var(--accent)">{{ (allMatches$ | async)?.length || 0 }}</div>
+      <div class="delta">▲ live</div>
+    </div>
+  </div>
+
+  <div class="dash-split">
+    <div>
+      <div class="section-head">
+        <h3>Your selves</h3>
+        <button class="btn btn-ghost btn-sm" routerLink="/personas">View all <app-icon name="arrR"></app-icon></button>
+      </div>
+      <div class="persona-grid">
+        <div *ngFor="let p of personas$ | async" class="persona-card" (click)="openPersona(p._id!)">
+          <div class="ghost-ring"></div>
+          <app-persona-orb [initial]="initialOf(p)" [hue]="hueOf(p)" [size]="54"></app-persona-orb>
+          <h4>{{ p.name }}</h4>
+          <div class="meta">Mood: {{ p.moodTag || '—' }} · Goal: {{ p.connectionGoal }}</div>
+          <div class="traits">
+            <span *ngFor="let t of traitsOf(p)" class="chip">{{ t }}</span>
+            <span *ngIf="extraTraits(p) > 0" class="chip">+{{ extraTraits(p) }}</span>
+          </div>
+          <div class="score-row">
+            <div class="score-n">{{ personaBest(p, (allMatches$ | async)) }}<small>% best match</small></div>
+            <div class="actions">
+              <button class="btn btn-sm btn-ghost" (click)="$event.stopPropagation(); openPersona(p._id!)"><app-icon name="edit"></app-icon></button>
+              <button class="btn btn-sm btn-primary" (click)="$event.stopPropagation(); openMatches()">See matches</button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="(personas$ | async)?.length === 0" class="card" style="grid-column:1/-1; text-align:center; padding:40px">
+          <div class="muted">No personas yet.</div>
+          <button class="btn btn-primary" style="margin-top:12px" (click)="newPersona()">
+            <app-icon name="plus"></app-icon> Create your first self
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-head">
+        <h3>Top matches</h3>
+        <button class="btn btn-ghost btn-sm" routerLink="/matches">All matches <app-icon name="arrR"></app-icon></button>
+      </div>
+      <div class="match-feed">
+        <div *ngFor="let m of topMatches$ | async" class="match-row" (click)="openMatches()">
+          <div class="pair">
+            <app-persona-orb *ngIf="personaFrom(m,'a')"
+              [initial]="initialOf(personaFrom(m,'a'))" [hue]="hueOf(personaFrom(m,'a'))" [size]="34"></app-persona-orb>
+            <div *ngIf="personaFrom(m,'b')"
+                 [style.background]="'linear-gradient(135deg, hsl(' + hueOf(personaFrom(m,'b')) + ' 80% 65%), hsl(' + ((hueOf(personaFrom(m,'b'))+60)%360) + ' 80% 65%))'"
+                 style="width:34px; height:34px; border-radius:50%; margin-left:-10px; border:2px solid var(--card); display:grid; place-items:center; color:white; font-weight:600; font-size:12px">
+              {{ initialOf(personaFrom(m,'b')) }}
+            </div>
+          </div>
+          <div class="names">
+            <b>{{ ownerPossessive(myPersonaOf(m), currentUserId) }} {{ myPersonaOf(m)?.name }}
+               ↔ {{ ownerPossessive(otherPersonaOf(m), currentUserId) }} {{ otherPersonaOf(m)?.name }}</b>
+            <div>Shared: {{ sharedOf(m).join(' · ') || 'no obvious overlap' }}</div>
+          </div>
+          <div class="score">{{ m.score }}%</div>
+        </div>
+        <div *ngIf="(topMatches$ | async)?.length === 0" class="card" style="text-align:center; padding:24px">
+          <div class="muted">No matches yet — create more personas.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

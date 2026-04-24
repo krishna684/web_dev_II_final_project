@@ -1,0 +1,48 @@
+<div class="page">
+  <div class="row between" style="margin-bottom:24px; align-items:flex-end">
+    <div>
+      <h1>My selves</h1>
+      <div class="sub">The different versions of yourself. Create up to 5 — a work self, a weekend self, a creative self. Each gets matched against other people's selves.</div>
+    </div>
+    <button class="btn btn-primary" routerLink="/personas/new"><app-icon name="plus"></app-icon> New self</button>
+  </div>
+
+  <div class="row" style="gap:10px; margin-bottom:20px; flex-wrap:wrap">
+    <div class="row" style="gap:8px; padding:8px 14px; background:var(--card); border:1px solid var(--border); border-radius:var(--pill); min-width:280px">
+      <app-icon name="search"></app-icon>
+      <input [(ngModel)]="query" style="background:transparent; border:none; outline:none; flex:1; font-size:13.5px" placeholder="Search name, trait, goal…"/>
+    </div>
+    <div class="row" style="gap:6px">
+      <span *ngFor="let m of moods$ | async"
+            class="chip" [class.accent]="moodFilter === m"
+            (click)="moodFilter = m"
+            style="cursor:pointer; padding:6px 12px">
+        {{ m }}
+      </span>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px">
+    <div *ngFor="let p of filtered$ | async" class="persona-card" (click)="openPersona(p._id!)">
+      <div class="ghost-ring"></div>
+      <app-persona-orb [initial]="initialOf(p)" [hue]="hueOf(p)" [size]="64"></app-persona-orb>
+      <h4>{{ p.name }}</h4>
+      <div class="meta">Mood: {{ p.moodTag || '—' }} · Goal: {{ p.connectionGoal }}</div>
+      <div class="traits">
+        <span *ngFor="let t of p.traits" class="chip">{{ t }}</span>
+      </div>
+      <p class="muted" style="font-size:13px; margin:4px 0 14px; line-height:1.5">{{ p.bio }}</p>
+      <div class="score-row">
+        <div class="score-n">v{{ p.currentVersion || 1 }}<small> current</small></div>
+        <div class="actions">
+          <button class="btn btn-sm btn-ghost" (click)="$event.stopPropagation(); openPersona(p._id!)"><app-icon name="edit"></app-icon></button>
+          <button class="btn btn-sm btn-ghost" (click)="$event.stopPropagation(); openDrift(p._id!)"><app-icon name="clock"></app-icon></button>
+          <button class="btn btn-sm btn-ghost" (click)="delete(p._id!, $event)"><app-icon name="trash"></app-icon></button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="(filtered$ | async)?.length === 0" class="card" style="grid-column:1/-1; text-align:center; padding:40px">
+      <div class="muted">No personas match that filter.</div>
+    </div>
+  </div>
+</div>
