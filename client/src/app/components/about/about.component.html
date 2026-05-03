@@ -1,0 +1,50 @@
+<div class="auth-screen" style="display:block; min-height:100vh">
+  <div class="atmo"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+  <div class="grid-bg"></div>
+
+  <header style="max-width:860px; margin:0 auto; padding:32px; display:flex; justify-content:space-between; align-items:center; position:relative; z-index:2">
+    <div class="row" style="gap:12px">
+      <div class="logo-mark"></div>
+      <div>
+        <div style="font-weight:700; letter-spacing:-0.02em; font-size:17px">Lumi</div>
+        <small class="muted" style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase">where your selves meet</small>
+      </div>
+    </div>
+    <div class="row" style="gap:14px">
+      <a routerLink="/why" class="muted">Why</a>
+      <a routerLink="/login" class="btn btn-primary btn-sm">Sign in <app-icon name="arr"></app-icon></a>
+    </div>
+  </header>
+
+  <main style="max-width:860px; margin:0 auto; padding:40px 32px 80px; position:relative; z-index:2">
+    <a routerLink="/login" class="muted" style="font-size:13px">← Back to sign in</a>
+
+    <h1 style="font-family:'Fraunces', serif; font-weight:500; font-size:56px; line-height:1.05; letter-spacing:-0.03em; margin:24px 0 20px">
+      About <em style="font-style:italic; background:linear-gradient(120deg, var(--accent), var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent">us</em>.
+    </h1>
+    <p class="muted" style="font-size:18px; line-height:1.55; max-width:620px">
+      The team behind Lumi.
+    </p>
+
+    <!-- ============================================================ -->
+    <!-- TEAM SECTION — fill this in when ready.                       -->
+    <!-- Structure idea: one card per team member.                     -->
+    <!-- ============================================================ -->
+    <section style="margin-top:56px">
+      <div class="card" style="padding:48px; text-align:center">
+        <div class="muted" style="font-size:14px; line-height:1.7">
+          Team info coming soon.
+        </div>
+      </div>
+    </section>
+
+    <footer style="margin-top:80px; padding-top:24px; border-top:1px solid var(--border); display:flex; justify-content:space-between; color:var(--text-dim); font-size:12px">
+      <div>© 2026 Lumi</div>
+      <div class="row" style="gap:14px">
+        <a routerLink="/why">Why</a>
+        <a routerLink="/about">About us</a>
+        <a routerLink="/login">Sign in</a>
+      </div>
+    </footer>
+  </main>
+</div>

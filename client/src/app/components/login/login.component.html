@@ -1,0 +1,70 @@
+<div class="auth-shell">
+  <div class="atmo"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+  <div class="grid-bg"></div>
+
+  <header class="auth-topbar">
+    <a class="brand" routerLink="/login" style="cursor:pointer">
+      <div class="logo-mark"></div>
+      <div>
+        <b>Lumi</b>
+        <small>where your selves meet</small>
+      </div>
+    </a>
+    <nav>
+      <a routerLink="/why">Why</a>
+      <a routerLink="/about">About us</a>
+      <a routerLink="/register" class="btn btn-primary btn-sm">Create account</a>
+    </nav>
+  </header>
+
+  <main class="auth-screen">
+    <div class="auth-left">
+      <app-auth-backdrop></app-auth-backdrop>
+      <div class="auth-hero">
+        <span class="tag">LIVE · people finding their match today</span>
+        <h1>Meet the people who match the <em>you</em> that's here today.</h1>
+        <p>You're not one person. Build the different sides of yourself and see who clicks with each one — for love, friendship, creative partners, or something in between.</p>
+        <div class="auth-stats">
+          <div class="s"><b>14K</b><span>people matched today</span></div>
+          <div class="s"><b>92%</b><span>called the match meaningful</span></div>
+          <div class="s"><b>5</b><span>selves per person, on average</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-right">
+      <form class="auth-card" [formGroup]="form" (ngSubmit)="submit()">
+        <h2>Welcome back</h2>
+        <div class="muted">Sign in to meet your people.</div>
+
+        <div class="field">
+          <label>Email</label>
+          <input formControlName="email" placeholder="you@domain.com"/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" formControlName="password" placeholder="••••••••"/>
+        </div>
+
+        <p *ngIf="error" class="muted" style="color:var(--danger); font-size:12.5px">{{ error }}</p>
+
+        <button class="btn btn-primary" type="submit" [disabled]="form.invalid || loading">
+          <ng-container *ngIf="loading; else ready">Signing in…</ng-container>
+          <ng-template #ready>Start meeting people <app-icon name="arr"></app-icon></ng-template>
+        </button>
+
+        <div class="auth-swap">
+          New here? <b [routerLink]="'/register'">Create an account</b>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="auth-bottombar">
+    <div>© 2026 Lumi</div>
+    <nav>
+      <a routerLink="/why">Why</a>
+      <a routerLink="/about">About us</a>
+    </nav>
+  </footer>
+</div>

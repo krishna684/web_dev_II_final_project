@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="row between" style="margin-bottom:20px; align-items:flex-end">
+    <div>
+      <h1>Network</h1>
+      <div class="sub">A visual map of every self on the platform. Thicker lines = stronger matches. Click a node to focus; click a line to read its AI compatibility report.</div>
+    </div>
+  </div>
+
+  <div class="graph-shell">
+    <div class="graph-panel">
+      <h5>Legend</h5>
+      <div class="graph-legend">
+        <div><span class="dot-u"></span> Your personas</div>
+        <div><span class="dot-o"></span> Others</div>
+        <div class="muted" style="margin-top:12px; font-size:11px">
+          Edge thickness = compatibility score. Click a node to isolate its connections. Click an edge to open the AI report.
+        </div>
+      </div>
+      <div class="divider"></div>
+      <h5>Stats</h5>
+      <div class="graph-legend">
+        <div>{{ nodeCount }} nodes · {{ edgeCount }} edges</div>
+        <div>{{ strongCount }} strong (≥80) links</div>
+      </div>
+    </div>
+
+    <div class="graph-canvas-wrap">
+      <svg #svgRoot></svg>
+    </div>
+
+    <div class="graph-panel">
+      <h5>Focus</h5>
+      <ng-container *ngIf="focused; else noFocus">
+        <div style="font-size:14px; font-weight:600; margin-bottom:8px">{{ focused.name }}</div>
+        <div class="muted" style="font-size:12px; margin-bottom:12px">Connected matches:</div>
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <div *ngFor="let item of focusedMatches"
+               (click)="openFocusMatch(item.match)"
+               style="padding:10px 12px; background:var(--card-2); border-radius:8px; border:1px solid var(--border); cursor:pointer; display:flex; justify-content:space-between; align-items:center">
+            <span style="font-size:12.5px">{{ item.other.name }}</span>
+            <b style="font-family:'Fraunces', serif; font-size:14px; color:var(--accent)">{{ item.match.score }}%</b>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" style="width:100%; margin-top:14px" type="button" (click)="clearFocus()">
+          Clear focus
+        </button>
+      </ng-container>
+      <ng-template #noFocus>
+        <div class="muted" style="font-size:12.5px; line-height:1.55">
+          Click any node to isolate its connections. Click an edge to open its AI compatibility report.
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<app-report-panel
+  [match]="drawerMatch"
+  [a]="drawerA"
+  [b]="drawerB"
+  (close)="closeDrawer()">
+</app-report-panel>
